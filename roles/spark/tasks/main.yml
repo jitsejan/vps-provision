@@ -1,0 +1,22 @@
+---
+- name: Download Spark
+  get_url: 
+    url: "https://archive.apache.org/dist/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}.tgz"
+    dest: /opt/
+
+- name: Decompress Spark
+  unarchive:
+    src: "/opt/spark-{{spark_version}}-bin-hadoop{{hadoop_version}}.tgz"
+    dest: "/opt/"
+    remote_src: yes
+
+- name: Create symbolic link to Spark
+  file: 
+    src: "/opt/spark-{{spark_version}}-bin-hadoop{{ hadoop_version }}"
+    dest: "/opt/spark"
+    state: "link"
+
+- name: Update PATH environment variable for Spark
+  copy: 
+    dest: "/etc/profile.d/spark.sh"
+    content: "export PATH=$PATH:/opt/spark/bin\nexport SPARK_HOME=/opt/spark\n export PYSPARK_PYTHON=/usr/bin/python3"
