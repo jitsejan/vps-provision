@@ -1,0 +1,17 @@
+---
+- hosts: ssdnodes
+  remote_user: root
+  vars_prompt:
+    - name: "user_name"
+      prompt: "Enter a name for the new user"
+      private: no
+      confirm: no
+    - name: "user_password"
+      prompt: "Enter a password for the new user"
+      private: yes
+      encrypt: "sha512_crypt"
+      confirm: yes
+      salt_size: 7
+  roles:
+  - base
+  
