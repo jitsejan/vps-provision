@@ -1,0 +1,19 @@
+---
+- name: Install Java Runtime Environment
+  become: yes
+  apt:
+    name: default-jre
+    state: latest
+    update_cache: yes
+- name: Install Java Development Kit
+  become: yes
+  apt:
+    name: default-jdk
+    state: latest
+    update_cache: yes
+
+- name: Set JAVA_HOME variable
+  copy: 
+    dest: "/etc/profile.d/java.sh"
+    content: "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64\n"
+
