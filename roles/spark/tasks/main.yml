@@ -19,4 +19,36 @@
 - name: Update PATH environment variable for Spark
   copy: 
     dest: "/etc/profile.d/spark.sh"
-    content: "export PATH=$PATH:/opt/spark/bin\nexport SPARK_HOME=/opt/spark\n export PYSPARK_PYTHON=/usr/bin/python3"
+    content: "export PATH=$PATH:/opt/spark/bin\nexport SPARK_HOME={{ spark_home }}\n export PYSPARK_PYTHON=/usr/bin/python3"
+
+- name: Retrieve hadoop-aws JAR
+  get_url:
+    url: http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar 
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve aws-java-sdk JAR
+  get_url:
+    url: http://central.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar 
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve hadoop-azure JAR
+  get_url:
+    url: http://central.maven.org/maven2/org/apache/hadoop/hadoop-azure/2.7.3/hadoop-azure-2.7.3.jar 
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve hadoop-storage JAR
+  get_url:
+    url: http://central.maven.org/maven2/com/microsoft/azure/azure-storage/6.1.0/azure-storage-6.1.0.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve azure-sqldb-spark JAR
+  get_url:
+    url: http://central.maven.org/maven2/com/microsoft/azure/azure-sqldb-spark/1.0.2/azure-sqldb-spark-1.0.2.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve mssql-jdbc JAR
+  get_url:
+    url: http://central.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/7.0.0.jre8/mssql-jdbc-7.0.0.jre8.jar
+    dest: "{{spark_home}}/jars/"
+
+
+
+
+
+
+
