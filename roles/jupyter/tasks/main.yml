@@ -1,0 +1,123 @@
+---
+- name: Ensure necessary packages are installed
+  apt: 
+    name: "{{ jupyter_pkgs }}"
+    state: present
+    update_cache: yes
+  
+- block:
+  - name: Create a dedicated group to run Jupyter
+    group:
+      name: jupyter
+      gid: 2841
+      system: yes
+      state: present
+
+  - name: Create a dedicated user to run Jupyter
+    user:
+      name: jupyter
+      groups: jupyter
+      uid: 2841
+      system: yes
+      createhome: yes
+      state: present
+
+  - name: Setup Jupyter notebook directory
+    file:
+      path: /data
+      state: directory
+      owner: jupyter
+      group: jupyter
+      mode: 0777
+
+- name: Install virtual environment
+  pip:
+    name: virtualenv
+    executable: pip3
+    state: latest
+
+- name: Create virtualenv root directory
+  file:
+    path: /data/jupyter
+    state: directory
+    owner: jupyter
+    group: jupyter
+    mode: 0755
+
+- name: Set up virtual environment
+  shell: virtualenv -p python3 /data/jupyter
+  become_user: jupyter
+  changed_when: no
+
+- name: Copy requirements.txt file
+  copy: 
+    src: requirements.txt
+    dest: /tmp/jupyterhub_requirements.txt
+  become_user: jupyter
+
+- name: Install requirements.txt
+  pip: 
+    requirements: /tmp/jupyterhub_requirements.txt
+    virtualenv: /data/jupyter
+    extra_args: --upgrade
+  become_user: jupyter
+
+- name: Generate the notebook configuration
+  shell: "/data/jupyter/bin/jupyter notebook --generate-config"
+  become_user: jupyter
+
+- name: Check to see if the Jupyter configuration file exists
+  stat: 
+    path: /home/jupyter/.jupyter/jupyterhub_config.py
+  register: config_exists
+  become_user: jupyter
+
+- block:
+  - name: Create .jupyter directory
+    file:
+      path: /home/jupyter/.jupyter
+      state: directory
+      owner: jupyter
+      group: jupyter
+      mode: 0755
+  - name: Generate the notebook configuration
+    command: "/data/jupyter/bin/jupyterhub --generate-config chdir=/home/jupyter/.jupyter/ creates={{ jupyter_config_filename }}"
+    become_user: jupyter
+  - name: Apply Jupyter config
+    template:
+      src: jupyterhub_config.py.j2
+      dest: '{{ jupyter_config_filename }}'
+      mode: 0644
+      force: yes
+  when: config_exists.stat.exists == False
+
+- block:
+  - name: Create .jupyter/custom directory
+    file:
+      path: /home/jupyter/.jupyter/custom
+      state: directory
+      owner: jupyter
+      group: jupyter
+      mode: 0755
+  - name: Copy custom.css file
+    copy: 
+      src: custom.css
+      dest: /home/jupyter/.jupyter/custom/custom.css
+    become_user: jupyter
+
+- name: Make Jupyter a systemd service
+  template:
+    src: '{{ item }}'
+    dest: '/{{ item }}'
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - 'etc/systemd/system/jupyter.service'
+
+- name: Start Jupyter notebook
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: jupyter
+    state: restarted

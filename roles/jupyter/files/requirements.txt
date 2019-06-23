@@ -1,0 +1,16 @@
+s3fs
+pexpect
+matplotlib
+seaborn
+azure.storage.blob
+scrapy
+selenium
+psycopg2-binary
+pyarrow
+pyspark
+nltk
+jupyter_contrib_nbextensions
+jupyter_nbextensions_configurator
+jupyter
+jupyterhub
+git+https://github.com/jupyter/sudospawner
