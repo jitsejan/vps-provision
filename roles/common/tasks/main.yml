@@ -2,18 +2,18 @@
 - name: Install Java Runtime Environment
   become: yes
   apt:
-    name: default-jre
+    name: openjdk-8-jre-headless
     state: latest
     update_cache: yes
 - name: Install Java Development Kit
   become: yes
   apt:
-    name: default-jdk
+    name: openjdk-8-jdk
     state: latest
     update_cache: yes
 
 - name: Set JAVA_HOME variable
   copy: 
     dest: "/etc/profile.d/java.sh"
-    content: "export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64\n"
+    content: "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64\n"
 
