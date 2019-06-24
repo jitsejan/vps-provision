@@ -9,5 +9,6 @@ My goal for this exercise is to have at least the following things working:
 
 - Jupyter Notebook
 - Spark
+- Nginx (proxy)
 
 More to follow.

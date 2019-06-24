@@ -13,11 +13,19 @@
       confirm: yes
       salt_size: 7
   roles:
-  - base
-  - common
-  - { 
-      role: 'spark',
-      spark_version: '2.2.1',
-      hadoop_version: '2.7'
-    }
-  - jupyter
+  # - base
+  # - common
+  # - { 
+  #     role: 'spark',
+  #     spark_version: '2.2.1',
+  #     hadoop_version: '2.7'
+  #   }
+  # - jupyter
+    - nginx
+  # - {
+  #     role: 'nginx',
+  #     app_name: 'jupyter',
+  #     app_port: 8181,
+  #     app_fqdn: jupyter.jitsejan.com,
+  #     app_ip: localhost,
+  #   }

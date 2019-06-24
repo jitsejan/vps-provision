@@ -11,7 +11,7 @@ jupyter_package_state: latest
 jupyter_port: 8181
 
 # The IP address Jupyter server will bind to.
-jupyter_ip: '0.0.0.0'
+jupyter_ip: 'localhost'
 
 # The default notebook password is 'jupyter' but should be overridden
 # with the one entered by the user (see 'jupyter_entered_password' below).
