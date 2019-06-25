@@ -1,6 +1,12 @@
 ---
 - hosts: ssdnodes
   remote_user: root
+  vars:
+    jupyter_domain: dev.jitsejan.com
+    jupyter_name: 'dev'
+    jupyter_port: 8181
+    key_out: /home/jupyter/.jupyter/jupyter.key
+    cert_out: /home/jupyter/.jupyter/jupyter.cert
   vars_prompt:
     - name: "user_name"
       prompt: "Enter a name for the new user"
@@ -19,5 +25,9 @@
       role: 'spark',
       spark_version: '2.2.1',
       hadoop_version: '2.7'
-    }
+  }
   - jupyter
+  - {
+      role: 'nginx',
+      app_ip: localhost,
+    }

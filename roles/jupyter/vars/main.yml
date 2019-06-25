@@ -13,3 +13,7 @@ jupyter_pkgs:
 
 # Jupyter
 jupyter_config_filename: '/home/jupyter/.jupyter/jupyterhub_config.py'
+ssl_country: UK
+ssl_state: GL
+ssl_city: LDN
+ssl_org: JJ

@@ -29,49 +29,53 @@
       owner: jupyter
       group: jupyter
       mode: 0777
+  - name: Create notebook directory
+    file:
+      path: /data/notebooks
+      state: directory
+      owner: jupyter
+      group: jupyter
+      mode: 0755
 
-- name: Install virtual environment
-  pip:
-    name: virtualenv
-    executable: pip3
-    state: latest
-
-- name: Create virtualenv root directory
-  file:
+- name: Check to see if the Jupyter environment exists
+  stat: 
     path: /data/jupyter
-    state: directory
-    owner: jupyter
-    group: jupyter
-    mode: 0755
-
-- name: Set up virtual environment
-  shell: virtualenv -p python3 /data/jupyter
+  register: environment_exists
   become_user: jupyter
-  changed_when: no
-
-- name: Copy requirements.txt file
-  copy: 
-    src: requirements.txt
-    dest: /tmp/jupyterhub_requirements.txt
-  become_user: jupyter
-
-- name: Install requirements.txt
-  pip: 
-    requirements: /tmp/jupyterhub_requirements.txt
-    virtualenv: /data/jupyter
-    extra_args: --upgrade
-  become_user: jupyter
-
-- name: Generate the notebook configuration
-  shell: "/data/jupyter/bin/jupyter notebook --generate-config"
-  become_user: jupyter
-
+- block:
+  - name: Install virtual environment
+    pip:
+      name: virtualenv
+      executable: pip3
+      state: latest
+  - name: Create virtualenv root directory
+    file:
+      path: /data/jupyter
+      state: directory
+      owner: jupyter
+      group: jupyter
+      mode: 0755
+  - name: Set up virtual environment
+    shell: virtualenv -p python3 /data/jupyter
+    become_user: jupyter
+    changed_when: no
+  - name: Copy requirements.txt file
+    copy: 
+      src: requirements.txt
+      dest: /tmp/jupyterhub_requirements.txt
+    become_user: jupyter
+  - name: Install requirements.txt
+    pip: 
+      requirements: /tmp/jupyterhub_requirements.txt
+      virtualenv: /data/jupyter
+      extra_args: --upgrade
+    become_user: jupyter
+  when: environment_exists.stat.exists == False
 - name: Check to see if the Jupyter configuration file exists
   stat: 
     path: /home/jupyter/.jupyter/jupyterhub_config.py
   register: config_exists
   become_user: jupyter
-
 - block:
   - name: Create .jupyter directory
     file:
@@ -80,16 +84,30 @@
       owner: jupyter
       group: jupyter
       mode: 0755
-  - name: Generate the notebook configuration
-    command: "/data/jupyter/bin/jupyterhub --generate-config chdir=/home/jupyter/.jupyter/ creates={{ jupyter_config_filename }}"
-    become_user: jupyter
   - name: Apply Jupyter config
     template:
       src: jupyterhub_config.py.j2
       dest: '{{ jupyter_config_filename }}'
       mode: 0644
       force: yes
+    become_user: jupyter
   when: config_exists.stat.exists == False
+
+- block:
+  - name: Create SSL certificates
+    command: openssl req -new -nodes -x509 -subj "/C={{ ssl_country }}/ST={{ ssl_state }}/L={{ ssl_city }}/O={{ ssl_org }}/CN={{ jupyter_domain }}" -days 3650 -keyout {{ key_out }} -out {{ cert_out }} -extensions v3_ca creates={{ cert_out }}
+  - name: Correct permissions for certificates (key)
+    file:
+      path: "{{ key_out }}"
+      owner: jupyter
+      group: jupyter
+      mode: 0755
+  - name: Correct permissions for certificates (cert)
+    file:
+      path: "{{ cert_out }}"
+      owner: jupyter
+      group: jupyter
+      mode: 0755
 
 - block:
   - name: Create .jupyter/custom directory
