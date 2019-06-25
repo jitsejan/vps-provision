@@ -5,13 +5,13 @@
 - name: Apply app config
   template:
     src: nginx.conf.j2
-    dest: '/etc/nginx/sites-available/{{ app_fqdn }}'
+    dest: '/etc/nginx/sites-available/{{ jupyter_domain }}'
     mode: 0644
     force: yes
 - name: Create symlink
   file:
-    src: "/etc/nginx/sites-available/{{ app_fqdn }}"
-    dest: "/etc/nginx/sites-enabled/{{ app_fqdn }}"
+    src: "/etc/nginx/sites-available/{{ jupyter_domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ jupyter_domain }}"
     state: link
   become: yes
 - name: Restart nginx

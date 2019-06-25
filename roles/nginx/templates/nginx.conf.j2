@@ -1,10 +1,10 @@
 upstream {{ jupyter_name }} {
-    server localhost:{{ app_port }};
+    server localhost:{{ jupyter_port }};
 }
 
 server {
     listen 80;
-    server_name {{ app_fqdn }};
+    server_name {{ jupyter_domain }};
 
     location / {
         proxy_pass https://{{ jupyter_name }};
@@ -18,10 +18,9 @@ server {
     }
 
 
-    listen              443 ssl;
-    ssl_certificate         /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
-    ssl_certificate_key     /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+    listen                  443 ssl;
+    ssl_certificate         {{ cert_out }};
+    ssl_certificate_key     {{ key_out }};
     
     location /api/kernels/ {
         proxy_pass            https://{{ jupyter_name }};
