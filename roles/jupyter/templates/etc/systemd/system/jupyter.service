@@ -3,7 +3,7 @@ Description=Jupyter Notebook
 
 [Service]
 Type=simple
-ExecStart=/data/jupyter/bin/jupyter notebook --config=/home/jupyter/.jupyter/jupyterhub_config.py
+ExecStart=/data/jupyter/bin/jupyter notebook --config={{ jupyter_config_filename }}
 User=jupyter
 Group=jupyter
 WorkingDirectory=/data

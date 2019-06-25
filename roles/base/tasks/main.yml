@@ -1,3 +1,9 @@
+- name: Ensure necessary packages are installed
+  apt: 
+    name: "{{ base_pkgs }}"
+    state: present
+    update_cache: yes
+
 - name: Check to make sure we have a 'wheel' group
   group:
     name: wheel
