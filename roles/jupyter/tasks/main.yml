@@ -71,29 +71,11 @@
       extra_args: --upgrade
     become_user: jupyter
   when: environment_exists.stat.exists == False
-
-- block:
-  - name: Create SSL certificates
-    command: openssl req -new -nodes -x509 -subj "/C={{ ssl_country }}/ST={{ ssl_state }}/L={{ ssl_city }}/O={{ ssl_org }}/CN={{ jupyter_domain }}" -days 3650 -keyout {{ key_out }} -out {{ cert_out }} -extensions v3_ca creates={{ cert_out }}
-  - name: Correct permissions for certificates (key)
-    file:
-      path: "{{ key_out }}"
-      owner: jupyter
-      group: jupyter
-      mode: 0755
-  - name: Correct permissions for certificates (cert)
-    file:
-      path: "{{ cert_out }}"
-      owner: jupyter
-      group: jupyter
-      mode: 0755
-
 - name: Check to see if the Jupyter configuration file exists
   stat: 
     path: /home/jupyter/.jupyter/jupyterhub_config.py
   register: config_exists
   become_user: jupyter
-
 - block:
   - name: Create .jupyter directory
     file:
@@ -110,6 +92,22 @@
       force: yes
     become_user: jupyter
   when: config_exists.stat.exists == False
+
+- block:
+  - name: Create SSL certificates
+    command: openssl req -new -nodes -x509 -subj "/C={{ ssl_country }}/ST={{ ssl_state }}/L={{ ssl_city }}/O={{ ssl_org }}/CN={{ jupyter_domain }}" -days 3650 -keyout {{ key_out }} -out {{ cert_out }} -extensions v3_ca creates={{ cert_out }}
+  - name: Correct permissions for certificates (key)
+    file:
+      path: "{{ key_out }}"
+      owner: jupyter
+      group: jupyter
+      mode: 0755
+  - name: Correct permissions for certificates (cert)
+    file:
+      path: "{{ cert_out }}"
+      owner: jupyter
+      group: jupyter
+      mode: 0755
 
 - block:
   - name: Create .jupyter/custom directory
