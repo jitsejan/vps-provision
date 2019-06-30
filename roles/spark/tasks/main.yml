@@ -1,39 +1,85 @@
 ---
-- name: Download Spark
-  get_url: 
-    url: "https://archive.apache.org/dist/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-hadoop{{ hadoop_version }}.tgz"
-    dest: /opt/
+- name: Check to see if Spark is installed
+  stat:
+    path: /opt/spark
+  register: spark_exists
 
-- name: Decompress Spark
-  unarchive:
-    src: "/opt/spark-{{spark_version}}-bin-hadoop{{hadoop_version}}.tgz"
-    dest: "/opt/"
-    remote_src: yes
+- block:
+  - name: Download Spark
+    get_url:
+      url: "http://apache.javapipe.com/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-without-hadoop.tgz"
+      dest: /opt/
+  - name: Decompress Spark
+    unarchive:
+      src: "/opt/spark-{{ spark_version }}-bin-without-hadoop.tgz"
+      dest: "/opt/"
+      remote_src: yes
+  - name: Create symbolic link to Spark
+    file:
+      src: "/opt/spark-{{spark_version}}-bin-without-hadoop"
+      dest: "/opt/spark"
+      state: "link"
+  - name: Update PATH environment variable for Spark
+    copy:
+      dest: "/etc/profile.d/spark.sh"
+      content: "export PATH=$PATH:/opt/spark/bin\nexport SPARK_HOME={{ spark_home }}\n export PYSPARK_PYTHON=/usr/bin/python3"
+  when: spark_exists.stat.exists == False
 
-- name: Create symbolic link to Spark
-  file: 
-    src: "/opt/spark-{{spark_version}}-bin-hadoop{{ hadoop_version }}"
-    dest: "/opt/spark"
-    state: "link"
+- name: Check to see if Hadoop is installed
+  stat:
+    path: /opt/hadoop
+  register: hadoop_exists
 
-- name: Update PATH environment variable for Spark
-  copy: 
-    dest: "/etc/profile.d/spark.sh"
-    content: "export PATH=$PATH:/opt/spark/bin\nexport SPARK_HOME={{ spark_home }}\n export PYSPARK_PYTHON=/usr/bin/python3"
+- block:
+  - name: Download Hadoop
+    get_url:
+      url: "https://archive.apache.org/dist/hadoop/core/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}.tar.gz"
+      dest: /opt/
+  - name: Decompress Hadoop
+    unarchive:
+      src: "/opt/hadoop-{{ hadoop_version }}.tar.gz"
+      dest: "/opt/"
+      remote_src: yes
+  - name: Create symbolic link to Spark
+    file:
+      src: "/opt/hadoop-{{ hadoop_version }}"
+      dest: "/opt/hadoop"
+      state: "link"
+  - name: Update PATH environment variable for Hadoop
+    copy:
+      dest: "/etc/profile.d/hadoop.sh"
+      content: "export PATH=$PATH:/opt/hadoop/bin\n"
+  when: hadoop_exists.stat.exists == False
 
 - name: Retrieve hadoop-aws JAR
   get_url:
-    url: http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar 
+    url: https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/{{ hadoop_version }}/hadoop-aws-{{ hadoop_version }}.jar
     dest: "{{spark_home}}/jars/"
 - name: Retrieve aws-java-sdk JAR
   get_url:
-    url: http://central.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar 
+    url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk/{{ aws_version }}/aws-java-sdk-{{ aws_version }}.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve aws-java-core-sdk JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-core/{{ aws_version }}/aws-java-sdk-core-{{ aws_version }}.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve aws-java-sdk-kms JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-kms/{{ aws_version }}/aws-java-sdk-kms-{{ aws_version }}.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve aws-java-sdk-s3 JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/{{ aws_version }}/aws-java-sdk-s3-{{ aws_version }}.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve aws-java-sdk-dynamodb JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-dynamodb/{{ aws_version }}/aws-java-sdk-dynamodb-{{ aws_version }}.jar
     dest: "{{spark_home}}/jars/"
 - name: Retrieve hadoop-azure JAR
   get_url:
-    url: http://central.maven.org/maven2/org/apache/hadoop/hadoop-azure/2.7.3/hadoop-azure-2.7.3.jar 
+    url: http://central.maven.org/maven2/org/apache/hadoop/hadoop-azure/2.7.3/hadoop-azure-2.7.3.jar
     dest: "{{spark_home}}/jars/"
-- name: Retrieve hadoop-storage JAR
+- name: Retrieve azure-storage JAR
   get_url:
     url: http://central.maven.org/maven2/com/microsoft/azure/azure-storage/6.1.0/azure-storage-6.1.0.jar
     dest: "{{spark_home}}/jars/"
@@ -45,9 +91,14 @@
   get_url:
     url: http://central.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/7.0.0.jre8/mssql-jdbc-7.0.0.jre8.jar
     dest: "{{spark_home}}/jars/"
-
-
-
+- name: Retrieve httpclient JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.3/httpclient-4.5.3.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve joda-time JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar
+    dest: "{{spark_home}}/jars/"
 
 
 

@@ -12,3 +12,10 @@ My goal for this exercise is to have at least the following things working:
 - Nginx (proxy)
 
 More to follow.
+
+
+## Sources
+
+- https://github.com/minio/minio
+- https://github.com/atosatto/ansible-minio
+
