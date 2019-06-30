@@ -71,6 +71,10 @@
   get_url:
     url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/{{ aws_version }}/aws-java-sdk-s3-{{ aws_version }}.jar
     dest: "{{spark_home}}/jars/"
+- name: Retrieve aws-java-sdk-dynamodb JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-dynamodb/{{ aws_version }}/aws-java-sdk-dynamodb-{{ aws_version }}.jar
+    dest: "{{spark_home}}/jars/"
 - name: Retrieve hadoop-azure JAR
   get_url:
     url: http://central.maven.org/maven2/org/apache/hadoop/hadoop-azure/2.7.3/hadoop-azure-2.7.3.jar
