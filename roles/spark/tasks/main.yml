@@ -99,7 +99,11 @@
   get_url:
     url: https://repo1.maven.org/maven2/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar
     dest: "{{spark_home}}/jars/"
-
-
-
-
+- name: Retrieve spark-sftp JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/springml/spark-sftp_2.11/1.1.5/spark-sftp_2.11-1.1.5.jar
+    dest: "{{spark_home}}/jars/"
+- name: Retrieve spark-sftp JAR
+  get_url:
+    url: https://repo1.maven.org/maven2/com/springml/sftp.client/1.0.3/sftp.client-1.0.3.jar
+    dest: "{{spark_home}}/jars/"

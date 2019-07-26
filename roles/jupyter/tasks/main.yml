@@ -21,7 +21,7 @@
       system: yes
       createhome: yes
       state: present
-
+  
   - name: Setup Jupyter notebook directory
     file:
       path: /data
@@ -29,13 +29,22 @@
       owner: jupyter
       group: jupyter
       mode: 0777
-  - name: Create notebook directory
-    file:
-      path: /data/notebooks
-      state: directory
-      owner: jupyter
-      group: jupyter
-      mode: 0755
+
+- name: Check to see if the Jupyter folder exists
+  stat: 
+    path: /data/notebooks/
+  register: notebook_folder_exists
+  become_user: jupyter
+
+- name: Create notebook directory
+  file:
+    path: /data/notebooks
+    state: directory
+    owner: jupyter
+    group: jupyter
+    mode: 0755
+  when: notebook_folder_exists.stat.exists == False
+
 
 - name: Check to see if the Jupyter environment exists
   stat: 

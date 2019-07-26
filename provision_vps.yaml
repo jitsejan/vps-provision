@@ -26,16 +26,16 @@
       spark_version: '2.4.3',
       hadoop_version: '3.1.2',
       aws_version: '1.11.534'
-  }
+    }
   - jupyter
   - {
       role: 'nginx',
       app_ip: localhost,
     }
-    - {
-      role: 'minio',
-      minio_server_datadirs: [
-        '/minio-data/'
-      ],
-      minio_server_download_url: 'https://dl.min.io/server/minio/release/linux-amd64/minio'
-    }
+  - {
+    role: 'minio',
+    minio_server_datadirs: [
+      '/minio-data/'
+    ],
+    minio_server_download_url: 'https://dl.min.io/server/minio/release/linux-amd64/minio'
+  }
