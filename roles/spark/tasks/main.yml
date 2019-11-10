@@ -7,7 +7,7 @@
 - block:
   - name: Download Spark
     get_url:
-      url: "http://apache.javapipe.com/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-without-hadoop.tgz"
+      url: "https://www-eu.apache.org/dist/spark/spark-{{ spark_version }}/spark-{{ spark_version }}-bin-without-hadoop.tgz"
       dest: /opt/
   - name: Decompress Spark
     unarchive:
