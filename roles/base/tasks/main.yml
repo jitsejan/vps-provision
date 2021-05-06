@@ -27,7 +27,7 @@
 - name: Add local public key for key-based SSH authentication
   authorized_key:
     user: "{{ user_name }}"
-    key: "{{item}}"
+    key: "{{ item }}"
   with_file:
     - ~/.ssh/id_rsa.pub
 
